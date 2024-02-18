@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1 th:text="${question.subject}"></h1>
+<div th:text="${question.content}"></div>
+
+<h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+<div>
+    <ul>
+        <li th:each="answer : ${question.answerList}" th:text="${answer.content}"></li>
+<!--        <li th:each="answer : ${question.answerList}" th:text="${answer.createDate}"></li>-->
+    </ul>
+</div>
+
+<!--
+[답변 등록] 버튼을 누르면 전송되는 form의 action은 타임리프의 th:action 속성으로 생성한다.
+이제 텍스트 창에 답변을 작성하고, 답변 등록 버튼을 클릭하면 /answer/create/2(여기서 ‘2’는 질문 데이터의 고유 번호를 의미한다.)와 같은 URL이 post 방식으로 호출될 것이다.
+-->
+<form th:action="@{|/answer/create/${question.id}|}" method="post">
+    <textarea name="content" id="content" rows="15"></textarea>
+    <input type="submit" value="답변등록">
+</form>
+
+</body>
+</html>

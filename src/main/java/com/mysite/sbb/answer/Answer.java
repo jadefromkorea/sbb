@@ -13,7 +13,7 @@ import lombok.Setter;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Aid;
+    private Integer id;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -21,15 +21,15 @@ public class Answer {
     private LocalDateTime createDate;
 
     @ManyToOne
-    @JoinColumn(name = "qId")
+//    @JoinColumn(name = "qId")
     private Question question;
 
-    public void setQuestion(Question question) {
-        if(this.question != null) {
-            this.question.getAnswerList().remove(this);
-        }
-
-        this.question = question;
-        question.getAnswerList().add(this);
-    }
+//    public void setQuestion(Question question) {
+//        if(this.question != null) {
+//            this.question.getAnswerList().remove(this);
+//        }
+//
+//        this.question = question;
+//        question.getAnswerList().add(this);
+//    }
 }
