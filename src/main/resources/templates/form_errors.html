@@ -1,0 +1,7 @@
+<!--
+출력할 오류 메시지 부분에 th:fragment="formErrorsFragment" 속성을 추가했다.
+th:fragment="formErrorsFragment"는 다른 템플릿에서 이 div 태그의 영역을 사용할 수 있도록 이름을 설정한 것이다.
+-->
+<div th:fragment="formErrorsFragment" class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
+  <div th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+</div>

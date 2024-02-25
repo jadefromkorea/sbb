@@ -5,6 +5,7 @@ import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerRepository;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.question.QuestionService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 @SpringBootTest
 class SbbApplicationTests {
+
+    @Autowired
+    private QuestionService questionService;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -94,7 +98,7 @@ class SbbApplicationTests {
 
         Question q = this.questionRepository.findBySubject("sbb가 무엇인가요?");
 
-        assertEquals(1, q.getQId());
+        assertEquals(1, q.getId());
     }
 
     @Test
@@ -103,7 +107,7 @@ class SbbApplicationTests {
 
         Question q = this.questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
 
-        assertEquals(1, q.getQId());
+        assertEquals(1, q.getId());
     }
 
     @Test
@@ -176,7 +180,7 @@ class SbbApplicationTests {
 
         Answer a = oa.get();
 
-        assertEquals(2, a.getQuestion().getQId());
+        assertEquals(2, a.getQuestion().getId());
     }
 
     @Transactional
@@ -225,6 +229,17 @@ class SbbApplicationTests {
 //
 //        assertEquals(1, this.answerRepository.count());
 //    }
+
+    @Test
+    @DisplayName("300개의 테스트 데이터를 생성")
+    void makeTestData() {
+        for (int i = 1; i <= 300; i++) {
+            String subject = String.format("테스트 데이터입니다:[%03d]", i);
+            String content = "내용무";
+
+            this.questionService.create(subject, content);
+        }
+    }
 
 
 

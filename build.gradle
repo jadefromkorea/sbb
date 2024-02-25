@@ -33,6 +33,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+    // Spring Boot Validation - 폼 클래스를 사용해 사용자로부터 입력받은 값을 검증하려면 먼저 Spring Boot Validation 라이브러리가 필요
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     // developmentOnly: 해당 라이브러리는 개발 환경에만 적용된다는 의미로, 운영 환경에 배포되는 jar, war 파일에는 이 라이브러리가 포함되지 않는다.
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
