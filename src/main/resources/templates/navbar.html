@@ -8,7 +8,15 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="#">로그인</a>
+          <!--
+          스프링 시큐리티의 타임리프(Tymeleaf) 확장 기능을 사용하여 사용자의 로그인 상태를 확인해야 한다.
+          sec:authorize="isAnonymous()": 로그인되지 않은 경우에 해당 요소(로그인 링크)가 표시된다.
+          sec:authorize="isAuthenticated()": 로그인된 경우에 해당 요소(로그아웃 링크)가 표시된다.
+          sec:authorize 속성은 사용자의 로그인 여부에 따라 요소를 출력하거나 출력하지 않게 한다.
+          로그인하지 않은 상태라면 sec:authorize="isAnonymous()"가 ‘참’이 되어 ‘로그인’ 링크가 표시되고. 로그인한 상태라면 sec:authorize="isAuthenticated()"가 ‘참’이 되어 ‘로그아웃’ 링크가 표시될 것이다.
+          -->
+          <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
+          <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/user/signup}">회원가입</a>

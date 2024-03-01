@@ -1,9 +1,14 @@
 package com.mysite.sbb.user;
 
+import com.mysite.sbb.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -27,7 +32,19 @@ BCryptPasswordEncoder 클래스는 비크립트(BCrypt) 해시 함수를 사용�
 //        user.setPassword(passwordEncoder.encode(password));
         user.setPassword(passwordEncoder.encode(password));
 
+        log.info(">>>>> user: {}", user);
+
         this.userRepository.save(user);
+
         return user;
+    }
+
+    public SiteUser getUser(String username) {
+        Optional<SiteUser> siteUser = this.userRepository.findByUsername(username);
+        if (siteUser.isPresent()) {
+            return siteUser.get();
+        } else {
+            throw new DataNotFoundException("siteuser not found");
+        }
     }
 }
