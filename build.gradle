@@ -29,6 +29,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    // postgresql
+    implementation 'org.postgresql:postgresql:42.6.0'
+
+    // log4j
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // thymeleaf-extras-springsecurity6 패키지는 타임리프 템플릿 엔진과 스프링 시큐리티 프레임워크를 함께 사용할 때 필요한 타임리프의 확장 기능이다.
