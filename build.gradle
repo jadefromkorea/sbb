@@ -29,11 +29,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // postgresql
-    implementation 'org.postgresql:postgresql:42.6.0'
-
+//    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     // log4j
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    // postgresql
+    implementation 'org.postgresql:postgresql:42.6.0'
 
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -46,6 +47,16 @@ dependencies {
 
     // Spring Boot Validation - 폼 클래스를 사용해 사용자로부터 입력받은 값을 검증하려면 먼저 Spring Boot Validation 라이브러리가 필요
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // 마크다운 라이브러리
+    /*
+    commonmark는 이와 같이 0.21.0이라는 버전을 지정해야 한다. 왜냐하면 스프링 부트의 라이브러리 관리 방식 때문이다.
+    스프링 부트가 내부적으로 관리하는 라이브러리에 포함되면 버전 정보가 필요 없고 포함되지 않으면 버전 정보가 필요하다.
+    즉, commonmark는 스프링 부트가 내부적으로 관리하는 라이브러리가 아니어서 이와 같이 명시하는 것이다.
+    참고로, 스프링 부트가 관리하는 라이브러리의 경우 버전 정보를 명시하지 않으면 스프링 부트가 가장 궁합이 잘 맞는 버전을 자동으로 선택한다.
+    따라서 라이브러리들의 호환성을 생각한다면 버전 정보는 따로 입력하지 않는 편이 좋다.
+     */
+    implementation 'org.commonmark:commonmark:0.21.0'
 
     // developmentOnly: 해당 라이브러리는 개발 환경에만 적용된다는 의미로, 운영 환경에 배포되는 jar, war 파일에는 이 라이브러리가 포함되지 않는다.
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

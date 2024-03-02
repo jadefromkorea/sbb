@@ -7,11 +7,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -136,4 +138,87 @@ public class QuestionController {
 
         return "redirect:/question/list"; // 질문 저장후 질문목록으로 이동
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String questionModify(QuestionForm questionForm, @PathVariable("id") Integer id, Principal principal) {
+        Question question = this.questionService.getQuestion(id);
+        /*
+        이와 같이 questionModify 메서드를 추가했다. 만약 현재 로그인한 사용자와 질문의 작성자가 동일하지 않을 경우에는 '수정 권한이 없습니다.'라는 오류가 발생하도록 했다.
+        그리고 수정할 질문의 제목과 내용을 화면에 보여 주기 위해 questionForm 객체에 id값으로 조회한 질문의 제목(subject)과 내용(object)의 값을 담아서 템플릿으로 전달했다.
+        이 과정이 없다면 질문 수정 화면에 '제목', '내용'의 값이 채워지지 않아 비워져 보일 것이다.
+        그런데 여기서 한 가지 짚고 넘어가야 할 것이 있다. 질문을 수정할 수 있는 새로운 템플릿을 만들지 않고 질문을 등록했을 때 사용한 question_form.html 템플릿을 사용한다는 점이다.
+        */
+        if(!question.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        }
+
+        questionForm.setSubject(question.getSubject());
+        questionForm.setContent(question.getContent());
+
+        return "question_form";
+    }
+
+    /*
+    POST 형식의 /question/modify/{id} 요청을 처리하기 위해 이와 같이 questionModify 메서드를 추가했다.
+    questionModify 메서드는 questionForm의 데이터를 검증하고 로그인한 사용자와 수정하려는 질문의 작성자가 동일한지도 검증한다.
+    검증이 통과되면 QuestionService에서 작성한 modify 메서드를 호출하여 질문 데이터를 수정한다.
+    그리고 수정이 완료되면 질문 상세 화면(/question/detail/(숫자))으로 리다이렉트한다.
+    */
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify/{id}")
+    public String questionModify(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal, @PathVariable("id") Integer id) {
+        if (bindingResult.hasErrors()) {
+            return "question_form";
+        }
+
+        Question question = this.questionService.getQuestion(id);
+        /*
+        이와 같이 questionModify 메서드를 추가했다. 만약 현재 로그인한 사용자와 질문의 작성자가 동일하지 않을 경우에는 '수정 권한이 없습니다.'라는 오류가 발생하도록 했다.
+        그리고 수정할 질문의 제목과 내용을 화면에 보여 주기 위해 questionForm 객체에 id값으로 조회한 질문의 제목(subject)과 내용(object)의 값을 담아서 템플릿으로 전달했다.
+        이 과정이 없다면 질문 수정 화면에 '제목', '내용'의 값이 채워지지 않아 비워져 보일 것이다.
+        그런데 여기서 한 가지 짚고 넘어가야 할 것이 있다. 질문을 수정할 수 있는 새로운 템플릿을 만들지 않고 질문을 등록했을 때 사용한 question_form.html 템플릿을 사용한다는 점이다.
+        */
+        if (!question.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        }
+
+        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+
+        return String.format("redirect:/question/detail/%s", id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/delete/{id}")
+    public String questionDelete(Principal principal, @PathVariable("id") Integer id) {
+        Question question = this.questionService.getQuestion(id);
+        /*
+        사용자가 [삭제] 버튼을 클릭했다면 URL로 전달받은 id값을 사용하여 Question 데이터를 조회한 후,
+        로그인한 사용자와 질문 작성자가 동일할 경우 앞서 작성한 서비스를 이용하여 질문을 삭제하게 했다.
+        그리고 질문을 삭제한 후에는 질문 목록 화면(/)으로 돌아갈 수 있도록 했다.
+        */
+        if (!question.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
+        }
+
+        this.questionService.delete(question);
+
+        return "redirect:/";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String questionVote(Principal principal, @PathVariable("id") Integer id) {
+        Question question = this.questionService.getQuestion(id);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        /*
+        다른 기능과 마찬가지로 추천 기능도 로그인한 사람만 사용할 수 있도록 @PreAuthorize("isAuthenticated( )") 애너테이션을 적용했다.
+        그리고 앞서 작성한 QuestionService의 vote 메서드를 호출하여 사용자(siteUser)를 추천인(voter)으로 저장했다.
+        오류가 없다면 추천인을 저장한 후 질문 상세 화면으로 리다이렉트한다.
+         */
+        this.questionService.vote(question, siteUser);
+
+        return String.format("redirect:/question/detail/%s", id);
+    }
+
 }
