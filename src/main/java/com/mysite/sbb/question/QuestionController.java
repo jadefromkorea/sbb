@@ -50,10 +50,19 @@ public class QuestionController {
 //    paging.hasPrevious	    이전 페이지의 존재 여부를 의미한다.
 //    paging.hasNext	        다음 페이지의 존재 여부를 의미한다.
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
-        Page<Question> paging = this.questionService.getList(page);
+    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
+//    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+//        Page<Question> paging = this.questionService.getList(page);
+        /*
+        검색어에 해당하는 kw 매개변수를 추가했고 기본값으로 빈 문자열을 설정했다.
+        검색어가 입력되지 않을 경우 kw값이 null이 되는 것을 방지하기 위해 빈 문자열을 기본값으로 설정한다.
+        그리고 화면에서 입력한 검색어를 화면에 그대로 유지하기 위해 model.addAttribute("kw", kw)로 kw값을 저장했다.
+        이제 화면에서 검색어가 입력되면 kw값이 매개변수로 들어오고 해당 값으로 질문 목록이 검색되어 조회될 것이다.
+         */
+        Page<Question> paging = this.questionService.getList(page, kw);
 
         model.addAttribute("paging", paging);
+        model.addAttribute("kw", kw);
 
         return "question_list";
     }
