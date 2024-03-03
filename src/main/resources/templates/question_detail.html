@@ -4,7 +4,7 @@
 부트스트랩의 card 컴포넌트는 어떤 내용을 그룹화하여 보여 줄 때 사용한다.
 그리고 질문과 답변 덩어리를 살펴보면 style="white-space: pre-line;"과 같은 스타일을 지정해 주었다.
 style="white-space: pre-line;"은 CSS 스타일 속성으로, 사용자가 입력한 대로 줄 바꿈이 적용되도록 만들어 준다.
--->.
+-->
 <html layout:decorate="~{layout}">
 <div layout:fragment="content" class="container my-3">
     <!-- 질문 -->
@@ -65,11 +65,36 @@ style="white-space: pre-line;"은 CSS 스타일 속성으로, 사용자가 입�
                    th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="삭제"></a>
             </div>
+            <!-- 질문 댓글 Start -->
+            <!--
+            질문에 등록된 댓글 전부를 보여 주기위해 question.commentList 루프를 돌며 댓글 내용과 글쓴이, 작성일시, 수정일시를 출력했다.
+            또 댓글 글쓴이와 로그인한 사용자가 같으면 '수정', '삭제' 링크가 보이도록 했다. 그리고 루프 바깥쪽에는 댓글을 작성할 수 있는 '댓글 추가 ..' 링크도 추가했다.
+            루프에 의해 반복되는 댓글 각각은 comment라는 스타일 클래스를 따로 지정했다. 댓글 영역은 좀 작은 글씨로 보여질 필요가 있기 때문이다.
+            지금까지 빈 파일로 되어있던 style.css에 comment 클래스에 대한 내용을 다음처럼 추가하도록 하자.
+            -->
+            <div class="mt-3" th:if="${not #lists.isEmpty(question.commentList)}">
+                <div th:each="comment,index : ${question.commentList}" class="comment py-2 text-muted">
+                    <span style="white-space: pre-line;" th:text="${comment.content}"></span>
+                    <span th:if="${comment.modifyDate != null}"
+                          th:text="| - ${comment.author.username}, ${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')} (수정: ${#temporals.format(comment.modifyDate, 'yyyy-MM-dd HH:mm')})|"></span>
+                    <span th:if="${comment.modifyDate == null}"
+                          th:text="| - ${comment.author.username}, ${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}|"></span>
+                    <a sec:authorize="isAuthenticated()"
+                       th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                       th:href="@{|/comment/modify/${comment.id}|}" class="small">수정</a>,
+                    <a sec:authorize="isAuthenticated()"
+                       th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                       href="javascript:void(0);" class="small delete" th:data-uri="@{|/comment/delete/${comment.id}|}">삭제</a>
+                </div>
+            </div>
+            <div>
+                <a th:href="@{|/comment/create/question/${question.id}|}" class="small"><small>댓글 추가 ..</small></a>
+            </div>
+            <!-- 질문 댓글 End -->
         </div>
     </div>
     <!-- 답변의 갯수 표시 -->
-    <h5 class="border-bottom my-3 py-2"
-        th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+    <h5 class="border-bottom my-3 py-2"  th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
     <!-- 답변 반복 시작 -->
     <div class="card my-3" th:each="answer : ${question.answerList}">
         <!--

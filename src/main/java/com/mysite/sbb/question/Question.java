@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.comment.Comment;
 import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.*;
 
@@ -47,4 +48,11 @@ public class Question {
      */
     @ManyToMany
     Set<SiteUser> voter;
+
+    /*
+    질문에 작성된 댓글 리스트를 참조하기 위해 commentList 속성을 @OneToMany 애너테이션으로 생성했다.
+    Comment 모델에서 Question을 연결하기 위한 속성명이 question이므로 mappedBy의 값으로 "question"이 전달되어야 한다.
+     */
+    @OneToMany(mappedBy = "question")
+    private List<Comment> commentList;
 }
